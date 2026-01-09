@@ -199,8 +199,8 @@ npm run dev
 
 **Access:**
 - 🌐 Live App: https://ccc-tableau-cloud-108816008638.us-central1.run.app
-- 📖 API Docs: http://localhost:8000/docs
-- 📊 Tableau: http://localhost:5173/tableau
+- 📖 API Docs: https://mortality-signals-api-fozkypxpga-uc.a.run.app/docs
+- 📊 Tableau: https://ccc-tableau-cloud-108816008638.us-central1.run.app/tableau
 
 ### Option 2: Docker Compose
 
