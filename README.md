@@ -40,152 +40,122 @@ Embedded dashboard showing Top 10 Causes of Death with interactive filters.
 
 ## 🏗️ Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────────────────────┐
-│                              MORTALITY SIGNALS                                   │
-│                         AI-Powered Mortality Analytics                           │
-├─────────────────────────────────────────────────────────────────────────────────┤
-│                                                                                  │
-│   ┌───────────────────┐          ┌────────────────────────────────────────────┐ │
-│   │    FRONTEND       │          │              BACKEND (FastAPI)             │ │
-│   │    React + Vite   │          │                                            │ │
-│   │                   │  HTTP    │  ┌─────────────────────────────────────┐   │ │
-│   │  ┌─────────────┐  │ ◄──────► │  │          API ROUTERS               │   │ │
-│   │  │ Observatory │  │          │  │                                     │   │ │
-│   │  │  Dashboard  │  │          │  │  /api/data      → Stats & Entities  │   │ │
-│   │  └─────────────┘  │          │  │  /api/insights  → AI Anomalies      │   │ │
-│   │  ┌─────────────┐  │          │  │  /api/scenario  → What-If Modeling  │   │ │
-│   │  │ Signal Feed │  │          │  │  /api/clustering→ Peer Comparison   │   │ │
-│   │  │  (Anomalies)│  │          │  │  /api/tableau   → JWT Auth Tokens   │   │ │
-│   │  └─────────────┘  │          │  │  /api/export    → CSV/JSON Export   │   │ │
-│   │  ┌─────────────┐  │          │  └─────────────────────────────────────┘   │ │
-│   │  │   Compare   │  │          │                     │                       │ │
-│   │  │  (Entities) │  │          │                     ▼                       │ │
-│   │  └─────────────┘  │          │  ┌─────────────────────────────────────┐   │ │
-│   │  ┌─────────────┐  │          │  │           DATA LAYER                │   │ │
-│   │  │  Scenario   │  │          │  │                                     │   │ │
-│   │  │  Builder    │  │          │  │  Raw CSV (Kaggle)                   │   │ │
-│   │  └─────────────┘  │          │  │       ▼                             │   │ │
-│   │  ┌─────────────┐  │          │  │  ETL Pipeline (Python)              │   │ │
-│   │  │  Tableau    │──┼──────────┼──┤       ▼                             │   │ │
-│   │  │  Embed Page │  │   JWT    │  │  Parquet Files (Processed)          │   │ │
-│   │  └─────────────┘  │  Token   │  │       ▼                             │   │ │
-│   │                   │          │  │  In-Memory DataFrame (Pandas)       │   │ │
-│   └───────────────────┘          │  └─────────────────────────────────────┘   │ │
-│            │                      └────────────────────────────────────────────┘ │
-│            │                                                                      │
-│            │  Tableau Embedding API v3                                            │
-│            ▼                                                                      │
-│   ┌─────────────────────────────────────────────────────────────────────────────┐│
-│   │                         TABLEAU CLOUD                                        ││
-│   │                                                                              ││
-│   │   Site: ccc-hackathon-partha                                                 ││
-│   │   Workbook: GlobalOverview                                                   ││
-│   │   Dashboard: Dashboard1                                                      ││
-│   │                                                                              ││
-│   │   ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐             ││
-│   │   │ Yearly Trend    │  │ Top 10 Causes   │  │ Interactive     │             ││
-│   │   │ 1990-2019       │  │ Bar Chart       │  │ Filters         │             ││
-│   │   └─────────────────┘  └─────────────────┘  └─────────────────┘             ││
-│   │                                                                              ││
-│   │   Authentication: JWT (Connected App with HS256 signing)                     ││
-│   │   Embedding: <tableau-viz> Web Component                                     ││
-│   └─────────────────────────────────────────────────────────────────────────────┘│
-└─────────────────────────────────────────────────────────────────────────────────┘
+### Complete System Overview
+
+```mermaid
+graph TD
+    Client[USER BROWSER]
+    
+    subgraph "Google Cloud Run"
+        Frontend[Frontend Service<br/>(React + Vite)]
+        Backend[Backend Service<br/>(FastAPI + Uvicorn)]
+    end
+    
+    subgraph "Tableau Cloud"
+        TableauSite[Tableau Site<br/>ccc-hackathon-partha]
+        T_Dashboard[Interactive<br/>Dashboard]
+    end
+    
+    subgraph "Data Layer"
+        RawData[(Raw CSV)]
+        ETL[ETL Pipeline]
+        Parquet[(Parquet Files)]
+    end
+
+    %% Data Flow
+    RawData --> ETL
+    ETL --> Parquet
+    Parquet -->|Load on Startup| Backend
+
+    %% Application Flow
+    Client -->|HTTPS| Frontend
+    Frontend -->|REST API| Backend
+    Frontend -->|Tableau Embedding API| T_Dashboard
+    
+    %% Auth Flow
+    Frontend -- 1. Request Token --> Backend
+    Backend -- 2. Sign JWT --> Frontend
+    Frontend -- 3. Pass Token --> T_Dashboard
+    T_Dashboard -- 4. Verify Token --> TableauSite
 ```
 
----
+### Frontend Architecture
 
-## 🔐 Security Architecture
+```mermaid
+graph TD
+    subgraph "React Application"
+        App[App.tsx] --> Layout[Layout Wrapper]
+        Layout --> Routes
+        
+        subgraph "Pages & Components"
+            Routes --> Observatory[Observatory<br/>(Global Overview)]
+            Routes --> Signals[Signal Feed<br/>(Anomaly Detection)]
+            Routes --> Compare[Comparison Tool<br/>(Multi-Entity)]
+            Routes --> Scenario[Scenario Builder<br/>(What-If Analysis)]
+            Routes --> Tableau[Tableau Analytics<br/>(Embedded BI)]
+        end
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                      SECURITY FLOW                                   │
-├─────────────────────────────────────────────────────────────────────┤
-│                                                                      │
-│   BROWSER                     SERVER                    TABLEAU      │
-│   ───────                     ──────                    ───────      │
-│                                                                      │
-│   1. User visits              2. Request JWT                         │
-│      /tableau page   ────────►   /api/tableau/embed-token           │
-│                                       │                              │
-│                               3. Generate JWT with:                  │
-│                                  - TABLEAU_CLIENT_ID (iss)           │
-│                                  - TABLEAU_SECRET_ID (kid)           │
-│                                  - TABLEAU_SECRET_VALUE (signing)    │
-│                                  - User email (sub)                  │
-│                                  - Scopes (tableau:views:embed)      │
-│                                       │                              │
-│   4. Receive token   ◄────────────────┘                              │
-│                                                                      │
-│   5. <tableau-viz                                                    │
-│        token="..."    ─────────────────────────────►  6. Validate    │
-│        src="...">                                        JWT token   │
-│                                                              │       │
-│   7. Embedded                  ◄─────────────────────────────┘       │
-│      dashboard                                                       │
-│                                                                      │
-│   ⚠️  SECRETS NEVER LEAVE SERVER:                                   │
-│       - TABLEAU_SECRET_VALUE only in .env                            │
-│       - JWT generation is server-side only                           │
-│       - Frontend only receives signed token                          │
-└─────────────────────────────────────────────────────────────────────┘
+        subgraph "Features"
+            Signals --> ZScore[Z-Score Calculation]
+            Compare --> EntityPicker[Entity Picker<br/>(React Portal)]
+            Tableau --> EmbedAPI[Tableau Embed API v3]
+            Scenario --> Simulator[Intervention Simulator]
+        end
+    end
 ```
 
----
+### Backend Services
 
-## 📊 Data Flow
+```mermaid
+graph TD
+    Request[API Request] --> Main[main.py]
+    Main --> CORS[CORS Middleware]
+    CORS --> Router[API Router]
 
+    subgraph "API Endpoints"
+        Router --> Data[/api/data<br/>Time Series & Stats]
+        Router --> Insights[/api/insights<br/>Anomaly Detection]
+        Router --> Scenario[/api/scenario<br/>Simulation Logic]
+        Router --> Tableau[/api/tableau<br/>JWT Authentication]
+    end
+
+    subgraph "Core Logic"
+        Data --> DataMgr[Data Manager]
+        Insights --> AnomalyEngine[Anomaly Engine]
+        Scenario --> SimEngine[Simulation Engine]
+        Tableau --> AuthMgr[Auth Manager]
+    end
+
+    subgraph "Data Storage"
+        DataMgr --> Cache[In-Memory Cache]
+        AnomalyEngine --> Cache
+        SimEngine --> Cache
+    end
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                         DATA PIPELINE                                │
-├─────────────────────────────────────────────────────────────────────┤
-│                                                                      │
-│   KAGGLE DATASET                                                     │
-│   ──────────────                                                     │
-│   annual-number-of-deaths-by-cause.csv                               │
-│   • Wide format (causes as columns)                                  │
-│   • 200+ entities, 30+ causes, 1990-2019                             │
-│                         │                                            │
-│                         ▼                                            │
-│   ┌─────────────────────────────────────────────────────────────┐   │
-│   │                    ETL PIPELINE                              │   │
-│   │                    (etl_pipeline.py)                         │   │
-│   │                                                              │   │
-│   │   1. Wide → Long transformation                              │   │
-│   │   2. Cause categorization (NCD, Communicable, Injury)        │   │
-│   │   3. Year-over-year change calculation                       │   │
-│   │   4. Rolling averages (5-year window)                        │   │
-│   │   5. Z-score anomaly detection (threshold: 1.5σ)             │   │
-│   │   6. Aggregation tables (global, entity, cause)              │   │
-│   └─────────────────────────────────────────────────────────────┘   │
-│                         │                                            │
-│                         ▼                                            │
-│   PROCESSED DATA (data/processed/)                                   │
-│   ────────────────────────────────                                   │
-│   • cause_deaths_long.parquet  (55K rows)                            │
-│   • anomalies.parquet          (4,569 anomalies)                     │
-│   • global_by_year.parquet     (yearly totals)                       │
-│   • entity_by_year.parquet     (entity aggregates)                   │
-│   • cause_by_year.parquet      (cause aggregates)                    │
-│                         │                                            │
-│                         ▼                                            │
-│   ┌─────────────────────────────────────────────────────────────┐   │
-│   │                   FastAPI SERVER                             │   │
-│   │                   (Pandas DataFrame)                         │   │
-│   │                                                              │   │
-│   │   In-memory cache for fast queries                           │   │
-│   │   REST API endpoints for frontend                            │   │
-│   │   Tableau-ready JSON export                                  │   │
-│   └─────────────────────────────────────────────────────────────┘   │
-│                         │                                            │
-│              ┌──────────┴──────────┐                                 │
-│              ▼                     ▼                                 │
-│   ┌─────────────────┐   ┌─────────────────────────┐                 │
-│   │   React App     │   │   Tableau Cloud          │                 │
-│   │   (Real-time)   │   │   (BI Dashboards)        │                 │
-│   └─────────────────┘   └─────────────────────────┘                 │
-└─────────────────────────────────────────────────────────────────────┘
+
+### Data Pipeline
+
+```mermaid
+graph LR
+    Kaggle[(Kaggle CSV)] --> ETL[ETL Pipeline<br/>(Python)]
+    
+    subgraph "Processing Steps"
+        ETL --> Clean[Wide->Long Transform]
+        Clean --> Categorize[Cause Categorization]
+        Categorize --> Stats[Rolling Avg & Z-Score]
+    end
+    
+    Stats --> Output
+    
+    subgraph "Processed Output"
+        Output --> Parquet1[(cause_deaths_long.parquet)]
+        Output --> Parquet2[(anomalies.parquet)]
+        Output --> Parquet3[(aggregates.parquet)]
+    end
+    
+    Parquet1 --> Backend[FastAPI Backend]
+    Parquet2 --> Backend
+    Parquet3 --> Backend
 ```
 
 ---
@@ -228,7 +198,7 @@ npm run dev
 ```
 
 **Access:**
-- 🌐 Frontend: http://localhost:5173
+- 🌐 Live App: https://ccc-tableau-cloud-108816008638.us-central1.run.app
 - 📖 API Docs: http://localhost:8000/docs
 - 📊 Tableau: http://localhost:5173/tableau
 
@@ -422,5 +392,6 @@ MIT License - See [LICENSE](LICENSE)
 
 ## 🔗 Links
 
+- **Live App**: [Mortality Signals Demo](https://ccc-tableau-cloud-108816008638.us-central1.run.app)
 - **Tableau Cloud Dashboard**: [GlobalOverview/Dashboard1](https://10ax.online.tableau.com/#/site/ccc-hackathon-partha/views/GlobalOverview/Dashboard1)
 - **Kaggle Dataset**: [Annual Cause of Death Numbers](https://www.kaggle.com/datasets/willianoliveiragibin/annual-cause-death-numbers)

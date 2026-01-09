@@ -32,8 +32,8 @@ from routers import data, tableau, insights, scenario, clustering, export
 # Configuration
 # =============================================================================
 
-DATA_DIR = Path(__file__).parent.parent / "data" / "processed"
-ENRICHED_DIR = Path(__file__).parent.parent / "data" / "enriched"
+DATA_DIR = Path("/app/data/processed")
+ENRICHED_DIR = Path("/app/data/enriched")
 
 # Global data store (loaded at startup)
 data_store = {}
@@ -97,7 +97,7 @@ app = FastAPI(
 )
 
 # CORS Configuration
-cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://localhost:3000")
+cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://localhost:3000,https://ccc-tableau-cloud-108816008638.us-central1.run.app")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_origins.split(","),

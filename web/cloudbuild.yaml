@@ -1,0 +1,5 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', '$_IMAGE_TAG', '--target', 'production', '--build-arg', 'VITE_API_BASE_URL=$_VITE_API_BASE_URL', '.']
+images:
+- '$_IMAGE_TAG'

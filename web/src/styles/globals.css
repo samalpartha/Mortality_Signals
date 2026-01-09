@@ -30,7 +30,7 @@ html.light {
 
 /* Light theme overrides for mesh gradient */
 html.light .mesh-gradient {
-  background: 
+  background:
     linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%),
     radial-gradient(at 40% 20%, rgba(22, 163, 74, 0.12) 0px, transparent 50%),
     radial-gradient(at 80% 0%, rgba(59, 130, 246, 0.10) 0px, transparent 50%),
@@ -144,7 +144,7 @@ html.light [class*="bg-black/"] {
 
 /* Light theme KPI cards */
 html.light .kpi-glow {
-  box-shadow: 
+  box-shadow:
     0 0 0 1px rgba(22, 163, 74, 0.1),
     0 4px 16px rgba(0, 0, 0, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
@@ -167,167 +167,159 @@ html.light ::-webkit-scrollbar-thumb:hover {
   html {
     @apply scroll-smooth;
   }
-  
+
   body {
     background-color: var(--color-bg);
     color: var(--color-text);
     font-feature-settings: "liga" 1, "calt" 1;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
-  
+
   /* Custom scrollbar */
   ::-webkit-scrollbar {
     @apply w-2;
   }
-  
+
   ::-webkit-scrollbar-track {
     @apply bg-observatory-bg;
   }
-  
+
   ::-webkit-scrollbar-thumb {
     @apply bg-observatory-border rounded-full;
   }
-  
+
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-observatory-muted;
   }
 }
 
 @layer components {
+
   /* Glass morphism cards */
   .glass-card {
-    @apply bg-observatory-surface/80 backdrop-blur-xl border border-observatory-border/50 rounded-xl;
+    @apply bg-observatory-surface backdrop-blur-xl border border-observatory-border rounded-xl;
   }
-  
+
   /* Signal pulse animation */
   .signal-pulse {
     @apply relative;
   }
-  
+
   .signal-pulse::before {
     content: '';
     @apply absolute inset-0 rounded-full animate-ping;
     background: inherit;
     opacity: 0.3;
   }
-  
+
   /* Severity badges */
   .severity-critical {
-    @apply bg-severity-critical/20 text-severity-critical border-severity-critical/30;
+    @apply bg-red-500/20 text-severity-critical border-red-500/30;
   }
-  
+
   .severity-warning {
-    @apply bg-severity-warning/20 text-severity-warning border-severity-warning/30;
+    @apply bg-amber-500/20 text-severity-warning border-amber-500/30;
   }
-  
+
   .severity-info {
-    @apply bg-severity-info/20 text-severity-info border-severity-info/30;
+    @apply bg-blue-500/20 text-severity-info border-blue-500/30;
   }
-  
+
   /* Grid pattern background */
   .grid-pattern {
-    background-image: 
+    background-image:
       linear-gradient(rgba(55, 65, 81, 0.3) 1px, transparent 1px),
       linear-gradient(90deg, rgba(55, 65, 81, 0.3) 1px, transparent 1px);
     background-size: 50px 50px;
   }
-  
+
   /* Gradient mesh background */
   .mesh-gradient {
-    background: 
+    background:
       radial-gradient(at 40% 20%, rgba(34, 197, 94, 0.08) 0px, transparent 50%),
       radial-gradient(at 80% 0%, rgba(59, 130, 246, 0.05) 0px, transparent 50%),
       radial-gradient(at 0% 50%, rgba(239, 68, 68, 0.05) 0px, transparent 50%),
       radial-gradient(at 80% 50%, rgba(34, 197, 94, 0.03) 0px, transparent 50%),
       radial-gradient(at 0% 100%, rgba(59, 130, 246, 0.05) 0px, transparent 50%);
   }
-  
+
   /* Skeleton loading animation */
   .skeleton {
     @apply bg-observatory-elevated animate-pulse rounded;
   }
-  
+
   /* KPI card glow effect */
   .kpi-glow {
-    box-shadow: 
+    box-shadow:
       0 0 0 1px rgba(34, 197, 94, 0.1),
       0 4px 16px rgba(0, 0, 0, 0.3),
       inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
-  
+
   /* Chart container */
   .chart-container {
-    @apply glass-card p-4;
+    @apply bg-observatory-surface backdrop-blur-xl border border-observatory-border rounded-xl p-4;
   }
-  
+
   /* Nav item */
   .nav-item {
-    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-observatory-muted
-           hover:bg-observatory-elevated hover:text-observatory-text
-           transition-all duration-200 cursor-pointer;
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-observatory-muted hover:bg-observatory-elevated hover:text-observatory-text transition-all duration-200 cursor-pointer;
   }
-  
+
   .nav-item.active {
-    @apply bg-signal-500/10 text-signal-400 border-l-2 border-signal-500;
+    @apply bg-green-500/10 text-signal-400 border-l-2 border-signal-500;
   }
-  
+
   /* Button variants */
   .btn-primary {
-    @apply px-4 py-2 bg-signal-600 hover:bg-signal-500 text-white rounded-lg
-           font-medium transition-all duration-200 
-           focus:outline-none focus:ring-2 focus:ring-signal-500/50;
+    @apply px-4 py-2 bg-signal-600 hover:bg-signal-500 text-white rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-signal-500 focus:border-signal-500;
   }
-  
+
   .btn-secondary {
-    @apply px-4 py-2 bg-observatory-elevated hover:bg-observatory-border 
-           text-observatory-text rounded-lg font-medium transition-all duration-200
-           border border-observatory-border;
+    @apply px-4 py-2 bg-observatory-elevated hover:bg-observatory-border text-observatory-text rounded-lg font-medium transition-all duration-200 border border-observatory-border;
   }
-  
+
   /* Input styles */
   .input-field {
-    @apply w-full px-4 py-2.5 bg-observatory-surface border border-observatory-border
-           rounded-lg text-observatory-text placeholder-observatory-muted
-           focus:outline-none focus:ring-2 focus:ring-signal-500/50 focus:border-signal-500
-           transition-all duration-200;
+    @apply w-full px-4 py-2.5 bg-observatory-surface border border-observatory-border rounded-lg text-observatory-text placeholder-observatory-muted focus:outline-none focus:ring-2 focus:ring-signal-500 focus:border-signal-500 transition-all duration-200;
   }
-  
+
   /* Data table */
   .data-table {
     @apply w-full text-sm;
   }
-  
+
   .data-table th {
-    @apply px-4 py-3 text-left text-observatory-muted font-medium uppercase tracking-wider
-           border-b border-observatory-border bg-observatory-surface/50;
+    @apply px-4 py-3 text-left text-observatory-muted font-medium uppercase tracking-wider border-b border-observatory-border bg-observatory-surface;
   }
-  
+
   .data-table td {
-    @apply px-4 py-3 border-b border-observatory-border/50;
+    @apply px-4 py-3 border-b border-observatory-border;
   }
-  
+
   .data-table tr:hover {
-    @apply bg-observatory-elevated/50;
+    @apply bg-observatory-elevated;
   }
 }
 
 @layer utilities {
+
   /* Text gradient */
   .text-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-signal-400 to-signal-600;
   }
-  
+
   /* Fade edges for overflow */
   .fade-edges {
     mask-image: linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent);
   }
-  
+
   /* Hide scrollbar but keep functionality */
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  
+
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }

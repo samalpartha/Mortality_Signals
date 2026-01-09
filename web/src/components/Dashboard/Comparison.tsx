@@ -10,7 +10,8 @@
  * =============================================================================
  */
 
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { useSearchParams } from 'react-router-dom'
 import {
   Plus,
@@ -57,6 +58,8 @@ export function Comparison({ entities, causes }: ComparisonProps) {
   const [loading, setLoading] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [showEntityPicker, setShowEntityPicker] = useState(false)
+  const buttonRef = useRef<HTMLButtonElement>(null)
+  const portalRef = useRef<HTMLDivElement>(null)
 
   // Initialize from URL params
   useEffect(() => {
@@ -82,7 +85,7 @@ export function Comparison({ entities, causes }: ComparisonProps) {
           insightsApi.compareEntities(selectedEntities, selectedCause || undefined)
         ])
         setComparisonData(compareData)
-        setInsights(insightsData)
+        setInsights(insightsData as any)
       } catch (err) {
         console.error('Failed to load comparison:', err)
       } finally {
@@ -92,6 +95,25 @@ export function Comparison({ entities, causes }: ComparisonProps) {
 
     loadComparison()
   }, [selectedEntities, selectedCause, indexed])
+
+  // Close entity picker when clicking outside
+  useEffect(() => {
+    if (!showEntityPicker) return
+
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement
+      // Check if click is outside the entity picker AND the portal dropdown
+      if (!target.closest('.entity-picker-container') &&
+        portalRef.current &&
+        !portalRef.current.contains(target)) {
+        setShowEntityPicker(false)
+        setSearchQuery('')
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [showEntityPicker])
 
   // Transform data for chart
   const chartData = (() => {
@@ -139,7 +161,7 @@ export function Comparison({ entities, causes }: ComparisonProps) {
       return entities.filter(e => !selectedEntities.includes(e.entity))
     }
     // Filter by search query
-    return entities.filter(e => 
+    return entities.filter(e =>
       e.entity.toLowerCase().includes(query) &&
       !selectedEntities.includes(e.entity)
     )
@@ -171,13 +193,13 @@ export function Comparison({ entities, causes }: ComparisonProps) {
                 <span
                   key={entity}
                   className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium"
-                  style={{ 
+                  style={{
                     backgroundColor: `${COMPARISON_COLORS[index]}20`,
                     borderColor: `${COMPARISON_COLORS[index]}50`,
                     color: COMPARISON_COLORS[index]
                   }}
                 >
-                  <span 
+                  <span
                     className="w-2 h-2 rounded-full"
                     style={{ backgroundColor: COMPARISON_COLORS[index] }}
                   />
@@ -190,10 +212,11 @@ export function Comparison({ entities, causes }: ComparisonProps) {
                   </button>
                 </span>
               ))}
-              
+
               {selectedEntities.length < 6 && (
-                <div className="relative">
+                <div className="relative entity-picker-container">
                   <button
+                    ref={buttonRef}
                     onClick={() => setShowEntityPicker(!showEntityPicker)}
                     className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm
                              bg-observatory-elevated border border-observatory-border
@@ -202,9 +225,16 @@ export function Comparison({ entities, causes }: ComparisonProps) {
                     <Plus className="w-4 h-4" />
                     Add Entity
                   </button>
-                  
-                  {showEntityPicker && (
-                    <div className="absolute top-full left-0 mt-2 w-72 glass-card p-3 z-50">
+
+                  {showEntityPicker && buttonRef.current && createPortal(
+                    <div
+                      ref={portalRef}
+                      className="fixed w-72 glass-card p-3 z-[9999]"
+                      style={{
+                        top: `${buttonRef.current.getBoundingClientRect().bottom + window.scrollY + 8}px`,
+                        left: `${buttonRef.current.getBoundingClientRect().left + window.scrollX}px`,
+                      }}
+                    >
                       <div className="relative mb-3">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-observatory-muted" />
                         <input
@@ -248,7 +278,8 @@ export function Comparison({ entities, causes }: ComparisonProps) {
                           ))
                         )}
                       </div>
-                    </div>
+                    </div>,
+                    document.body
                   )}
                 </div>
               )}
@@ -282,8 +313,8 @@ export function Comparison({ entities, causes }: ComparisonProps) {
                   onClick={() => setIndexed(true)}
                   className={clsx(
                     'px-3 py-1.5 rounded text-sm font-medium transition-colors',
-                    indexed 
-                      ? 'bg-signal-500 text-white shadow-sm' 
+                    indexed
+                      ? 'bg-signal-500 text-white shadow-sm'
                       : 'text-observatory-text hover:bg-observatory-elevated'
                   )}
                 >
@@ -293,8 +324,8 @@ export function Comparison({ entities, causes }: ComparisonProps) {
                   onClick={() => setIndexed(false)}
                   className={clsx(
                     'px-3 py-1.5 rounded text-sm font-medium transition-colors',
-                    !indexed 
-                      ? 'bg-signal-500 text-white shadow-sm' 
+                    !indexed
+                      ? 'bg-signal-500 text-white shadow-sm'
                       : 'text-observatory-text hover:bg-observatory-elevated'
                   )}
                 >
@@ -317,7 +348,7 @@ export function Comparison({ entities, causes }: ComparisonProps) {
               </span>
             )}
           </div>
-          
+
           {loading ? (
             <div className="h-96 flex items-center justify-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-signal-500" />
@@ -327,13 +358,13 @@ export function Comparison({ entities, causes }: ComparisonProps) {
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.5} />
-                  <XAxis 
-                    dataKey="year" 
-                    stroke="#6b7280" 
+                  <XAxis
+                    dataKey="year"
+                    stroke="#6b7280"
                     tick={{ fill: '#6b7280', fontSize: 12 }}
                   />
-                  <YAxis 
-                    stroke="#6b7280" 
+                  <YAxis
+                    stroke="#6b7280"
                     tick={{ fill: '#6b7280', fontSize: 12 }}
                     tickFormatter={(v) => indexed ? v.toFixed(0) : `${(v / 1000).toFixed(0)}K`}
                   />
@@ -413,7 +444,7 @@ export function Comparison({ entities, causes }: ComparisonProps) {
                   <tr key={stat.entity}>
                     <td>
                       <div className="flex items-center gap-2">
-                        <span 
+                        <span
                           className="w-3 h-3 rounded-full"
                           style={{ backgroundColor: COMPARISON_COLORS[i] }}
                         />

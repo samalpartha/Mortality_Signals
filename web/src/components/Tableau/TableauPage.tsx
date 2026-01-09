@@ -9,12 +9,12 @@
  * =============================================================================
  */
 
-import React, { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { TableauSetupStatus } from './TableauEmbed'
-import { 
-  LayoutDashboard, 
-  Settings, 
-  ExternalLink, 
+import {
+  LayoutDashboard,
+  Settings,
+  ExternalLink,
   Download,
   Database,
   BarChart3,
@@ -141,7 +141,7 @@ export function TableauPage() {
                 Open Full Screen
               </a>
             </div>
-            
+
             {/* Embedded Tableau Dashboard */}
             <TableauEmbeddedDashboard />
           </div>
@@ -175,30 +175,30 @@ export function TableauPage() {
           <div className="glass-card p-6">
             <h2 className="text-xl font-bold mb-4">Integration Architecture</h2>
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-              <FlowStep 
-                step={1} 
-                title="Raw Data" 
+              <FlowStep
+                step={1}
+                title="Raw Data"
                 description="CSV from Kaggle (1990-2019)"
                 icon={FileSpreadsheet}
               />
               <ArrowRight className="w-6 h-6 text-observatory-muted hidden md:block" />
-              <FlowStep 
-                step={2} 
-                title="ETL Pipeline" 
+              <FlowStep
+                step={2}
+                title="ETL Pipeline"
                 description="Transform & enrich data"
                 icon={TrendingUp}
               />
               <ArrowRight className="w-6 h-6 text-observatory-muted hidden md:block" />
-              <FlowStep 
-                step={3} 
-                title="API Export" 
+              <FlowStep
+                step={3}
+                title="API Export"
                 description="/api/export/tableau-ready"
                 icon={Database}
               />
               <ArrowRight className="w-6 h-6 text-observatory-muted hidden md:block" />
-              <FlowStep 
-                step={4} 
-                title="Tableau Cloud" 
+              <FlowStep
+                step={4}
+                title="Tableau Cloud"
                 description="Professional dashboards"
                 icon={BarChart3}
               />
@@ -312,8 +312,8 @@ export function TableauPage() {
                         <tr key={i}>
                           {exportData.columns.slice(0, 6).map((col) => (
                             <td key={col}>
-                              {typeof row[col] === 'number' 
-                                ? row[col].toLocaleString() 
+                              {typeof row[col] === 'number'
+                                ? row[col].toLocaleString()
                                 : row[col]}
                             </td>
                           ))}
@@ -348,7 +348,7 @@ export function TableauPage() {
       {activeTab === 'setup' && (
         <div className="space-y-6 max-w-3xl">
           <TableauSetupStatus />
-          
+
           {/* Environment variables reference */}
           <div className="glass-card p-6">
             <h3 className="font-semibold mb-4">Environment Variables (Backend)</h3>
@@ -374,12 +374,12 @@ export function TableauPage() {
 // Helper Components
 // =============================================================================
 
-function FeatureCard({ 
-  icon: Icon, 
-  title, 
-  description, 
-  color 
-}: { 
+function FeatureCard({
+  icon: Icon,
+  title,
+  description,
+  color
+}: {
   icon: any
   title: string
   description: string
@@ -402,12 +402,12 @@ function FeatureCard({
   )
 }
 
-function FlowStep({ 
-  step, 
-  title, 
-  description, 
-  icon: Icon 
-}: { 
+function FlowStep({
+  step,
+  title,
+  description,
+  icon: Icon
+}: {
   step: number
   title: string
   description: string
@@ -425,13 +425,13 @@ function FlowStep({
   )
 }
 
-function ExportFormatCard({ 
-  format, 
-  description, 
+function ExportFormatCard({
+  format,
+  description,
   endpoint,
   recommended = false,
   disabled = false,
-}: { 
+}: {
   format: string
   description: string
   endpoint: string
@@ -446,7 +446,7 @@ function ExportFormatCard({
   return (
     <div className={clsx(
       'p-4 rounded-lg border transition-all',
-      disabled 
+      disabled
         ? 'bg-observatory-elevated/30 border-observatory-border/50 opacity-60'
         : 'bg-observatory-elevated/50 border-observatory-border hover:border-signal-500/50 cursor-pointer',
       recommended && 'ring-2 ring-signal-500/50'
@@ -469,11 +469,11 @@ function ExportFormatCard({
   )
 }
 
-function SchemaField({ 
-  name, 
-  type, 
-  description 
-}: { 
+function SchemaField({
+  name,
+  type,
+  description
+}: {
   name: string
   type: string
   description: string
@@ -527,7 +527,7 @@ function TableauEmbeddedDashboard() {
   useEffect(() => {
     const fetchToken = async () => {
       try {
-        const response = await fetch('/api/tableau/embed-token')
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/tableau/embed-token`)
         if (!response.ok) {
           const data = await response.json()
           throw new Error(data.detail || 'Failed to get embed token')
@@ -558,7 +558,7 @@ function TableauEmbeddedDashboard() {
     tableauViz.setAttribute('height', '700')
     tableauViz.setAttribute('toolbar', 'bottom')
     tableauViz.setAttribute('hide-tabs', 'false')
-    
+
     // If we have a JWT token, add it for authenticated embedding
     if (token) {
       tableauViz.setAttribute('token', token)

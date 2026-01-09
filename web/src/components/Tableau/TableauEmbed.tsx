@@ -14,7 +14,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react'
-import { Loader2, AlertTriangle, ExternalLink, RefreshCw } from 'lucide-react'
+import { Loader2, AlertTriangle, ExternalLink } from 'lucide-react'
 import clsx from 'clsx'
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || ''
@@ -77,7 +77,7 @@ export function TableauEmbed({
         const response = await fetch(`${API_BASE}/api/tableau/config`)
         const data = await response.json()
         setConfig(data)
-        
+
         if (!data.configured) {
           setError('Tableau integration not configured. Set TABLEAU_* environment variables.')
           setLoading(false)
@@ -123,14 +123,12 @@ export function TableauEmbed({
         }
 
         // Get embed token from backend
-        const tokenResponse = await fetch(`${API_BASE}/api/tableau/embed-token`, {
-          method: 'POST',
-        })
-        
+        const tokenResponse = await fetch(`${API_BASE}/api/tableau/embed-token`)
+
         if (!tokenResponse.ok) {
           throw new Error('Failed to get embed token')
         }
-        
+
         const tokenData: EmbedToken = await tokenResponse.json()
 
         // Clear container
@@ -140,7 +138,7 @@ export function TableauEmbed({
 
         // Create tableau-viz element
         const viz = document.createElement('tableau-viz') as tableau.TableauViz
-        viz.src = embedUrl
+        viz.src = embedUrl!
         viz.token = tokenData.token
         viz.toolbar = showToolbar ? 'top' : 'hidden'
         viz.hideTabs = true
@@ -162,7 +160,7 @@ export function TableauEmbed({
   // Render loading state
   if (loading) {
     return (
-      <div 
+      <div
         className={clsx('glass-card flex items-center justify-center', className)}
         style={{ height }}
       >
@@ -177,7 +175,7 @@ export function TableauEmbed({
   // Render error state
   if (error) {
     return (
-      <div 
+      <div
         className={clsx('glass-card flex items-center justify-center', className)}
         style={{ height }}
       >
@@ -200,7 +198,7 @@ export function TableauEmbed({
 
   // Render Tableau container
   return (
-    <div 
+    <div
       ref={containerRef}
       className={clsx('glass-card overflow-hidden', className)}
       style={{ height }}
@@ -222,14 +220,14 @@ async function loadTableauAPI(): Promise<void> {
     const script = document.createElement('script')
     script.type = 'module'
     script.src = 'https://embedding.tableauusercontent.com/tableau.embedding.3.latest.min.js'
-    
+
     script.onload = () => {
       // Wait for custom element to be defined
       customElements.whenDefined('tableau-viz').then(() => resolve())
     }
-    
+
     script.onerror = () => reject(new Error('Failed to load Tableau Embedding API'))
-    
+
     document.head.appendChild(script)
   })
 }
@@ -368,18 +366,18 @@ export function TableauSetupStatus() {
             <AlertTriangle className="w-5 h-5 text-severity-warning" />
           )}
         </div>
-        
+
         <div className="flex-1">
           <h3 className="font-semibold mb-1">
             Tableau Integration: {status?.configured ? 'Connected' : 'Not Configured'}
           </h3>
-          
+
           {status?.base_url && (
             <p className="text-sm text-observatory-muted mb-2">
               Base URL: {status.base_url}
             </p>
           )}
-          
+
           {status?.issues && status.issues.length > 0 && (
             <ul className="text-sm text-severity-warning space-y-1">
               {status.issues.map((issue, i) => (
@@ -387,7 +385,7 @@ export function TableauSetupStatus() {
               ))}
             </ul>
           )}
-          
+
           {!status?.configured && (
             <div className="mt-4 p-3 bg-observatory-elevated rounded-lg text-sm">
               <p className="font-medium mb-2">To configure Tableau Cloud:</p>
