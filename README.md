@@ -44,39 +44,39 @@ Embedded dashboard showing Top 10 Causes of Death with interactive filters.
 
 ```mermaid
 graph TD
-    Client[USER BROWSER]
+    Client["USER BROWSER"]
     
     subgraph "Google Cloud Run"
-        Frontend[Frontend Service<br/>(React + Vite)]
-        Backend[Backend Service<br/>(FastAPI + Uvicorn)]
+        Frontend["Frontend Service<br/>(React + Vite)"]
+        Backend["Backend Service<br/>(FastAPI + Uvicorn)"]
     end
     
     subgraph "Tableau Cloud"
-        TableauSite[Tableau Site<br/>ccc-hackathon-partha]
-        T_Dashboard[Interactive<br/>Dashboard]
+        TableauSite["Tableau Site<br/>ccc-hackathon-partha"]
+        T_Dashboard["Interactive<br/>Dashboard"]
     end
     
     subgraph "Data Layer"
-        RawData[(Raw CSV)]
-        ETL[ETL Pipeline]
-        Parquet[(Parquet Files)]
+        RawData[("Raw CSV")]
+        ETL["ETL Pipeline"]
+        Parquet[("Parquet Files")]
     end
 
     %% Data Flow
     RawData --> ETL
     ETL --> Parquet
-    Parquet -->|Load on Startup| Backend
+    Parquet -->|"Load on Startup"| Backend
 
     %% Application Flow
-    Client -->|HTTPS| Frontend
-    Frontend -->|REST API| Backend
-    Frontend -->|Tableau Embedding API| T_Dashboard
+    Client -->|"HTTPS"| Frontend
+    Frontend -->|"REST API"| Backend
+    Frontend -->|"Tableau Embedding API"| T_Dashboard
     
     %% Auth Flow
-    Frontend -- 1. Request Token --> Backend
-    Backend -- 2. Sign JWT --> Frontend
-    Frontend -- 3. Pass Token --> T_Dashboard
-    T_Dashboard -- 4. Verify Token --> TableauSite
+    Frontend -- "1. Request Token" --> Backend
+    Backend -- "2. Sign JWT" --> Frontend
+    Frontend -- "3. Pass Token" --> T_Dashboard
+    T_Dashboard -- "4. Verify Token" --> TableauSite
 ```
 
 ### Frontend Architecture
@@ -84,22 +84,22 @@ graph TD
 ```mermaid
 graph TD
     subgraph "React Application"
-        App[App.tsx] --> Layout[Layout Wrapper]
+        App["App.tsx"] --> Layout["Layout Wrapper"]
         Layout --> Routes
         
         subgraph "Pages & Components"
-            Routes --> Observatory[Observatory<br/>(Global Overview)]
-            Routes --> Signals[Signal Feed<br/>(Anomaly Detection)]
-            Routes --> Compare[Comparison Tool<br/>(Multi-Entity)]
-            Routes --> Scenario[Scenario Builder<br/>(What-If Analysis)]
-            Routes --> Tableau[Tableau Analytics<br/>(Embedded BI)]
+            Routes --> Observatory["Observatory<br/>(Global Overview)"]
+            Routes --> Signals["Signal Feed<br/>(Anomaly Detection)"]
+            Routes --> Compare["Comparison Tool<br/>(Multi-Entity)"]
+            Routes --> Scenario["Scenario Builder<br/>(What-If Analysis)"]
+            Routes --> Tableau["Tableau Analytics<br/>(Embedded BI)"]
         end
 
         subgraph "Features"
-            Signals --> ZScore[Z-Score Calculation]
-            Compare --> EntityPicker[Entity Picker<br/>(React Portal)]
-            Tableau --> EmbedAPI[Tableau Embed API v3]
-            Scenario --> Simulator[Intervention Simulator]
+            Signals --> ZScore["Z-Score Calculation"]
+            Compare --> EntityPicker["Entity Picker<br/>(React Portal)"]
+            Tableau --> EmbedAPI["Tableau Embed API v3"]
+            Scenario --> Simulator["Intervention Simulator"]
         end
     end
 ```
@@ -108,26 +108,26 @@ graph TD
 
 ```mermaid
 graph TD
-    Request[API Request] --> Main[main.py]
-    Main --> CORS[CORS Middleware]
-    CORS --> Router[API Router]
+    Request["API Request"] --> Main["main.py"]
+    Main --> CORS["CORS Middleware"]
+    CORS --> Router["API Router"]
 
     subgraph "API Endpoints"
-        Router --> Data[/api/data<br/>Time Series & Stats]
-        Router --> Insights[/api/insights<br/>Anomaly Detection]
-        Router --> Scenario[/api/scenario<br/>Simulation Logic]
-        Router --> Tableau[/api/tableau<br/>JWT Authentication]
+        Router --> Data["/api/data<br/>Time Series & Stats"]
+        Router --> Insights["/api/insights<br/>Anomaly Detection"]
+        Router --> Scenario["/api/scenario<br/>Simulation Logic"]
+        Router --> Tableau["/api/tableau<br/>JWT Authentication"]
     end
 
     subgraph "Core Logic"
-        Data --> DataMgr[Data Manager]
-        Insights --> AnomalyEngine[Anomaly Engine]
-        Scenario --> SimEngine[Simulation Engine]
-        Tableau --> AuthMgr[Auth Manager]
+        Data --> DataMgr["Data Manager"]
+        Insights --> AnomalyEngine["Anomaly Engine"]
+        Scenario --> SimEngine["Simulation Engine"]
+        Tableau --> AuthMgr["Auth Manager"]
     end
 
     subgraph "Data Storage"
-        DataMgr --> Cache[In-Memory Cache]
+        DataMgr --> Cache["In-Memory Cache"]
         AnomalyEngine --> Cache
         SimEngine --> Cache
     end
@@ -137,23 +137,23 @@ graph TD
 
 ```mermaid
 graph LR
-    Kaggle[(Kaggle CSV)] --> ETL[ETL Pipeline<br/>(Python)]
+    Kaggle[("Kaggle CSV")] --> ETL["ETL Pipeline<br/>(Python)"]
     
     subgraph "Processing Steps"
-        ETL --> Clean[Wide->Long Transform]
-        Clean --> Categorize[Cause Categorization]
-        Categorize --> Stats[Rolling Avg & Z-Score]
+        ETL --> Clean["Wide->Long Transform"]
+        Clean --> Categorize["Cause Categorization"]
+        Categorize --> Stats["Rolling Avg & Z-Score"]
     end
     
     Stats --> Output
     
     subgraph "Processed Output"
-        Output --> Parquet1[(cause_deaths_long.parquet)]
-        Output --> Parquet2[(anomalies.parquet)]
-        Output --> Parquet3[(aggregates.parquet)]
+        Output --> Parquet1[("cause_deaths_long.parquet")]
+        Output --> Parquet2[("anomalies.parquet")]
+        Output --> Parquet3[("aggregates.parquet")]
     end
     
-    Parquet1 --> Backend[FastAPI Backend]
+    Parquet1 --> Backend["FastAPI Backend"]
     Parquet2 --> Backend
     Parquet3 --> Backend
 ```
