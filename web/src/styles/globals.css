@@ -1,0 +1,334 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Observatory Theme - Dark Analytics Dashboard (Default) */
+:root {
+  --color-bg: #0a0f1a;
+  --color-surface: #111827;
+  --color-elevated: #1f2937;
+  --color-border: #374151;
+  --color-muted: #6b7280;
+  --color-text: #f9fafb;
+  --color-accent: #22c55e;
+  --color-accent-dim: rgba(34, 197, 94, 0.1);
+}
+
+/* Light Theme - Applied via class on html element */
+html.light {
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-elevated: #f1f5f9;
+  --color-border: #cbd5e1;
+  --color-muted: #475569;
+  --color-text: #0f172a;
+  --color-accent: #16a34a;
+  --color-accent-dim: rgba(22, 163, 74, 0.15);
+}
+
+/* Light theme automatically uses CSS variables from html.light */
+
+/* Light theme overrides for mesh gradient */
+html.light .mesh-gradient {
+  background: 
+    linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%),
+    radial-gradient(at 40% 20%, rgba(22, 163, 74, 0.12) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, rgba(59, 130, 246, 0.10) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, rgba(239, 68, 68, 0.06) 0px, transparent 50%);
+}
+
+/* Light theme glass card */
+html.light .glass-card {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Light theme sidebar */
+html.light aside {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-color: #e2e8f0 !important;
+}
+
+/* Light theme header */
+html.light header {
+  background: rgba(248, 250, 252, 0.95) !important;
+  border-color: #e2e8f0 !important;
+}
+
+/* Light theme input */
+html.light .input-field {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+/* Light theme nav item */
+html.light .nav-item {
+  color: #475569;
+}
+
+html.light .nav-item:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+html.light .nav-item.active {
+  background: rgba(22, 163, 74, 0.1);
+  color: #16a34a;
+}
+
+/* Light theme buttons - ensure proper contrast */
+html.light .btn-secondary {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+html.light .btn-secondary:hover {
+  background: #f1f5f9 !important;
+}
+
+/* Light theme toggle buttons (like Indexed/Absolute) */
+html.light button[class*="bg-observatory-elevated"] {
+  background: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+/* Light theme cards with dark backgrounds */
+html.light [class*="bg-observatory-surface"] {
+  background: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Light theme scenario template cards */
+html.light .scenario-template-card,
+html.light [class*="bg-gradient-to-br"][class*="from-observatory"] {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%) !important;
+  color: #0f172a !important;
+}
+
+/* Light theme severity badges - ensure contrast */
+html.light .severity-info {
+  background: rgba(59, 130, 246, 0.15) !important;
+  color: #2563eb !important;
+}
+
+html.light .severity-warning {
+  background: rgba(245, 158, 11, 0.15) !important;
+  color: #d97706 !important;
+}
+
+html.light .severity-critical {
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: #dc2626 !important;
+}
+
+/* Light theme text-gradient */
+html.light .text-gradient {
+  background: linear-gradient(to right, #16a34a, #15803d) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+}
+
+/* Light theme table headers */
+html.light .data-table th {
+  background: #f8fafc !important;
+  color: #475569 !important;
+}
+
+/* Light theme modals and dropdowns */
+html.light [class*="bg-black/"] {
+  background: rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Light theme KPI cards */
+html.light .kpi-glow {
+  box-shadow: 
+    0 0 0 1px rgba(22, 163, 74, 0.1),
+    0 4px 16px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Light theme scrollbar */
+html.light ::-webkit-scrollbar-track {
+  background: #f8fafc;
+}
+
+html.light ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+}
+
+html.light ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+  
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-feature-settings: "liga" 1, "calt" 1;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    @apply w-2;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-observatory-bg;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-observatory-border rounded-full;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-observatory-muted;
+  }
+}
+
+@layer components {
+  /* Glass morphism cards */
+  .glass-card {
+    @apply bg-observatory-surface/80 backdrop-blur-xl border border-observatory-border/50 rounded-xl;
+  }
+  
+  /* Signal pulse animation */
+  .signal-pulse {
+    @apply relative;
+  }
+  
+  .signal-pulse::before {
+    content: '';
+    @apply absolute inset-0 rounded-full animate-ping;
+    background: inherit;
+    opacity: 0.3;
+  }
+  
+  /* Severity badges */
+  .severity-critical {
+    @apply bg-severity-critical/20 text-severity-critical border-severity-critical/30;
+  }
+  
+  .severity-warning {
+    @apply bg-severity-warning/20 text-severity-warning border-severity-warning/30;
+  }
+  
+  .severity-info {
+    @apply bg-severity-info/20 text-severity-info border-severity-info/30;
+  }
+  
+  /* Grid pattern background */
+  .grid-pattern {
+    background-image: 
+      linear-gradient(rgba(55, 65, 81, 0.3) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(55, 65, 81, 0.3) 1px, transparent 1px);
+    background-size: 50px 50px;
+  }
+  
+  /* Gradient mesh background */
+  .mesh-gradient {
+    background: 
+      radial-gradient(at 40% 20%, rgba(34, 197, 94, 0.08) 0px, transparent 50%),
+      radial-gradient(at 80% 0%, rgba(59, 130, 246, 0.05) 0px, transparent 50%),
+      radial-gradient(at 0% 50%, rgba(239, 68, 68, 0.05) 0px, transparent 50%),
+      radial-gradient(at 80% 50%, rgba(34, 197, 94, 0.03) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, rgba(59, 130, 246, 0.05) 0px, transparent 50%);
+  }
+  
+  /* Skeleton loading animation */
+  .skeleton {
+    @apply bg-observatory-elevated animate-pulse rounded;
+  }
+  
+  /* KPI card glow effect */
+  .kpi-glow {
+    box-shadow: 
+      0 0 0 1px rgba(34, 197, 94, 0.1),
+      0 4px 16px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+  
+  /* Chart container */
+  .chart-container {
+    @apply glass-card p-4;
+  }
+  
+  /* Nav item */
+  .nav-item {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-observatory-muted
+           hover:bg-observatory-elevated hover:text-observatory-text
+           transition-all duration-200 cursor-pointer;
+  }
+  
+  .nav-item.active {
+    @apply bg-signal-500/10 text-signal-400 border-l-2 border-signal-500;
+  }
+  
+  /* Button variants */
+  .btn-primary {
+    @apply px-4 py-2 bg-signal-600 hover:bg-signal-500 text-white rounded-lg
+           font-medium transition-all duration-200 
+           focus:outline-none focus:ring-2 focus:ring-signal-500/50;
+  }
+  
+  .btn-secondary {
+    @apply px-4 py-2 bg-observatory-elevated hover:bg-observatory-border 
+           text-observatory-text rounded-lg font-medium transition-all duration-200
+           border border-observatory-border;
+  }
+  
+  /* Input styles */
+  .input-field {
+    @apply w-full px-4 py-2.5 bg-observatory-surface border border-observatory-border
+           rounded-lg text-observatory-text placeholder-observatory-muted
+           focus:outline-none focus:ring-2 focus:ring-signal-500/50 focus:border-signal-500
+           transition-all duration-200;
+  }
+  
+  /* Data table */
+  .data-table {
+    @apply w-full text-sm;
+  }
+  
+  .data-table th {
+    @apply px-4 py-3 text-left text-observatory-muted font-medium uppercase tracking-wider
+           border-b border-observatory-border bg-observatory-surface/50;
+  }
+  
+  .data-table td {
+    @apply px-4 py-3 border-b border-observatory-border/50;
+  }
+  
+  .data-table tr:hover {
+    @apply bg-observatory-elevated/50;
+  }
+}
+
+@layer utilities {
+  /* Text gradient */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-signal-400 to-signal-600;
+  }
+  
+  /* Fade edges for overflow */
+  .fade-edges {
+    mask-image: linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent);
+  }
+  
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}

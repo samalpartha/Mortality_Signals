@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  # ==========================================================================
+  # Backend API - FastAPI
+  # ==========================================================================
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: mortality-signals-api
+    ports:
+      - "8000:8000"
+    environment:
+      - TABLEAU_BASE_URL=${TABLEAU_BASE_URL}
+      - TABLEAU_SITE_CONTENT_URL=${TABLEAU_SITE_CONTENT_URL}
+      - TABLEAU_CLIENT_ID=${TABLEAU_CLIENT_ID}
+      - TABLEAU_SECRET_ID=${TABLEAU_SECRET_ID}
+      - TABLEAU_SECRET_VALUE=${TABLEAU_SECRET_VALUE}
+    volumes:
+      - ./data:/app/data:ro
+      - ./api:/app:cached
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # ==========================================================================
+  # Frontend - React + Vite
+  # ==========================================================================
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+      target: development
+    container_name: mortality-signals-web
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8000
+    volumes:
+      - ./web:/app:cached
+      - /app/node_modules
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  # ==========================================================================
+  # ETL Runner (one-off data processing)
+  # ==========================================================================
+  etl:
+    build:
+      context: ./etl
+      dockerfile: Dockerfile
+    container_name: mortality-signals-etl
+    volumes:
+      - ./data:/app/data
+      - ./etl:/app:cached
+    profiles:
+      - etl
+    command: python etl_pipeline.py
+
+networks:
+  default:
+    name: mortality-signals-network

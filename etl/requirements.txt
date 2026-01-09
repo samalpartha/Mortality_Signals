@@ -1,0 +1,9 @@
+# ETL Pipeline Dependencies
+pandas>=2.0.0
+pyarrow>=14.0.0
+requests>=2.31.0
+kaggle>=1.5.16
+numpy>=1.24.0
+scipy>=1.11.0
+tqdm>=4.66.0
+python-dotenv>=1.0.0
