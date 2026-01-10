@@ -9,4 +9,4 @@ steps:
 images:
   - 'us-central1-docker.pkg.dev/$PROJECT_ID/hackathon-images/mortality-signals-web:latest'
 substitutions:
-  _VITE_API_BASE_URL: 'https://mortality-signals-api-fozkypxpga-uc.a.run.app'
+  _VITE_API_BASE_URL: 'https://mortality-signals-api-108816008638.us-central1.run.app'

@@ -82,7 +82,7 @@ export function Shell({ children, stats, loading }: ShellProps) {
     <div className="min-h-screen bg-observatory-bg mesh-gradient">
       {/* Mobile menu overlay */}
       {mobileMenuOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/60 z-40 lg:hidden"
           onClick={() => setMobileMenuOpen(false)}
         />
@@ -219,7 +219,7 @@ export function Shell({ children, stats, loading }: ShellProps) {
 
               {/* Notifications */}
               <div className="relative">
-                <button 
+                <button
                   onClick={() => setShowNotifications(!showNotifications)}
                   className="relative p-2 hover:bg-observatory-elevated rounded-lg transition-colors"
                 >
@@ -228,14 +228,14 @@ export function Shell({ children, stats, loading }: ShellProps) {
                     <span className="absolute top-1 right-1 w-2 h-2 bg-severity-critical rounded-full" />
                   )}
                 </button>
-                
+
                 {/* Notifications Dropdown */}
                 {showNotifications && (
                   <div className="absolute right-0 mt-2 w-80 bg-observatory-surface border border-observatory-border rounded-lg shadow-xl z-50">
                     <div className="p-4 border-b border-observatory-border">
                       <div className="flex items-center justify-between">
                         <h3 className="font-semibold">Notifications</h3>
-                        <button 
+                        <button
                           onClick={() => setShowNotifications(false)}
                           className="p-1 hover:bg-observatory-elevated rounded"
                         >
@@ -253,8 +253,8 @@ export function Shell({ children, stats, loading }: ShellProps) {
                               <p className="text-xs text-observatory-muted">Across {stats.entity_count} entities</p>
                             </div>
                           </div>
-                          <Link 
-                            to="/signals" 
+                          <Link
+                            to="/signals"
                             onClick={() => setShowNotifications(false)}
                             className="block text-center text-sm text-signal-400 hover:text-signal-300 py-2"
                           >
@@ -285,7 +285,7 @@ export function Shell({ children, stats, loading }: ShellProps) {
               </button>
 
               {/* Help Guide */}
-              <button 
+              <button
                 onClick={() => setShowGuide(true)}
                 className="p-2 hover:bg-observatory-elevated rounded-lg transition-colors"
                 title="Dashboard Guide"
@@ -294,7 +294,7 @@ export function Shell({ children, stats, loading }: ShellProps) {
               </button>
 
               {/* Settings */}
-              <button 
+              <button
                 onClick={() => setShowSettings(true)}
                 className="p-2 hover:bg-observatory-elevated rounded-lg transition-colors"
               >
@@ -556,7 +556,7 @@ function DashboardGuide({ onClose }: { onClose: () => void }) {
         </div>
 
         <div className="flex justify-end gap-3">
-          <a 
+          <a
             href="https://10ax.online.tableau.com/#/site/ccc-hackathon-partha/views/GlobalOverview/Dashboard1"
             target="_blank"
             rel="noopener noreferrer"
@@ -578,10 +578,10 @@ function DashboardGuide({ onClose }: { onClose: () => void }) {
  * Settings Modal Component
  */
 function SettingsModal({ onClose, stats }: { onClose: () => void; stats: GlobalStats | null }) {
-  const apiBaseUrl = window.location.origin
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || ''
 
   const handleExportData = async (format: 'csv' | 'json') => {
-    const url = format === 'csv' 
+    const url = format === 'csv'
       ? `${apiBaseUrl}/api/export/csv/main`
       : `${apiBaseUrl}/api/export/tableau-ready`
     window.open(url, '_blank')
@@ -612,14 +612,14 @@ function SettingsModal({ onClose, stats }: { onClose: () => void; stats: GlobalS
         <div className="space-y-4 mb-6">
           <h3 className="font-semibold text-signal-400">Export Data</h3>
           <div className="flex flex-wrap gap-3">
-            <button 
+            <button
               onClick={() => handleExportData('csv')}
               className="btn-secondary flex items-center gap-2"
             >
               <TrendingUp className="w-4 h-4" />
               Export CSV
             </button>
-            <button 
+            <button
               onClick={() => handleExportData('json')}
               className="btn-secondary flex items-center gap-2"
             >
@@ -677,7 +677,7 @@ function SettingsModal({ onClose, stats }: { onClose: () => void; stats: GlobalS
         <div className="p-4 bg-signal-500/10 border border-signal-500/30 rounded-lg">
           <h3 className="font-semibold text-signal-400 mb-2">About Mortality Signals</h3>
           <p className="text-sm text-observatory-muted">
-            Powered by AI-driven anomaly detection and Tableau Cloud integration. 
+            Powered by AI-driven anomaly detection and Tableau Cloud integration.
             Built for the 2026 Tableau Hackathon.
           </p>
           <div className="mt-2 text-xs text-observatory-muted">
@@ -717,7 +717,7 @@ function SearchBar() {
     const searchEntities = async () => {
       setLoading(true)
       try {
-        const response = await fetch(`/api/data/entities?q=${encodeURIComponent(query)}&limit=10`)
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || ''}/api/data/entities?q=${encodeURIComponent(query)}&limit=10`)
         if (response.ok) {
           const data = await response.json()
           setResults(data)
@@ -788,7 +788,7 @@ function SearchBar() {
 
       {/* Search Results Dropdown */}
       {showResults && results.length > 0 && (
-        <div 
+        <div
           ref={resultsRef}
           className="absolute top-full left-0 right-0 mt-2 glass-card shadow-xl z-50 max-h-64 overflow-y-auto"
         >

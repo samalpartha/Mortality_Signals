@@ -67,7 +67,7 @@ export const api = {
 
   // Global statistics
   async getStats(): Promise<GlobalStats> {
-    const res = await fetch(`${API_BASE}/api/data/stats`)
+    const res = await fetch(`${API_BASE}/api/data/global-stats`)
     return handleResponse(res)
   },
 

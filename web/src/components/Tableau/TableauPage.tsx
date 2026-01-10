@@ -37,6 +37,7 @@ interface ExportData {
 }
 
 export function TableauPage() {
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || ''
   const [activeTab, setActiveTab] = useState<Tab>('overview')
   const [exportData, setExportData] = useState<ExportData | null>(null)
   const [loadingExport, setLoadingExport] = useState(false)
@@ -53,7 +54,7 @@ export function TableauPage() {
     setLoadingExport(true)
     setExportError(null)
     try {
-      const response = await fetch('/api/export/tableau-ready?limit=5')
+      const response = await fetch(`${API_BASE}/api/export/tableau-ready?limit=5`)
       if (!response.ok) throw new Error('Failed to load export data')
       const data = await response.json()
       setExportData(data)
@@ -256,22 +257,23 @@ export function TableauPage() {
             </p>
 
             {/* Export Formats */}
+            {/* Export Formats */}
             <div className="grid md:grid-cols-3 gap-4 mb-8">
               <ExportFormatCard
                 format="CSV"
                 description="Universal format, works with all BI tools"
-                endpoint="/api/export/tableau-ready?format=csv"
+                endpoint={`${API_BASE}/api/export/tableau-ready?format=csv`}
                 recommended
               />
               <ExportFormatCard
                 format="JSON"
                 description="For programmatic access and web apps"
-                endpoint="/api/export/tableau-ready?format=json"
+                endpoint={`${API_BASE}/api/export/tableau-ready?format=json`}
               />
               <ExportFormatCard
                 format="Parquet"
                 description="Columnar format for large datasets"
-                endpoint="/api/export/tableau-ready?format=parquet"
+                endpoint={`${API_BASE}/api/export/tableau-ready?format=parquet`}
                 disabled
               />
             </div>

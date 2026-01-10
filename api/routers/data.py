@@ -281,7 +281,7 @@ async def get_entity_profile(
     }
 
 
-@router.get("/stats")
+@router.get("/global-stats", response_model=GlobalStatsResponse)
 async def get_global_stats():
     """
     Get global summary statistics.
@@ -305,6 +305,12 @@ async def get_global_stats():
         "cause_count": int(df["cause"].nunique()),
         "anomaly_count": int(df["is_anomaly"].sum())
     }
+
+
+@router.get("/stats", response_model=GlobalStatsResponse, include_in_schema=False)
+async def get_stats_alias():
+    """Alias for /global-stats for backward compatibility."""
+    return await get_global_stats()
 
 
 @router.get("/compare")

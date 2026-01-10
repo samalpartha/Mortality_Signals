@@ -28,19 +28,22 @@ build/
 .eggs/
 
 # Data files (large)
-data/raw/*.csv
-data/processed/*.parquet
-data/enriched/*.parquet
-*.hyper
+# data/raw/*.csv
+# data/processed/*.parquet
+# data/enriched/*.parquet
+# *.hyper
 
 # Logs
 *.log
 logs/
+openapi_debug.json
 
 # Test coverage
 .coverage
 htmlcov/
 .pytest_cache/
+web/playwright-report/
+web/test-results/
 
 # Tableau
 *.twbx

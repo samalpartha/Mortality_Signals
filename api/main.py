@@ -32,8 +32,18 @@ from routers import data, tableau, insights, scenario, clustering, export
 # Configuration
 # =============================================================================
 
-DATA_DIR = Path("/app/data/processed")
-ENRICHED_DIR = Path("/app/data/enriched")
+
+# Handle both container and local paths
+if Path("/app/data/processed").exists():
+    DATA_DIR = Path("/app/data/processed")
+    ENRICHED_DIR = Path("/app/data/enriched")
+else:
+    # Fallback to local relative path (assuming running from api/ directory or root)
+    DATA_DIR = Path(__file__).parent.parent / "data" / "processed"
+    ENRICHED_DIR = Path(__file__).parent.parent / "data" / "enriched"
+
+print(f"DEBUG: Calculated DATA_DIR: {DATA_DIR} (Exists: {DATA_DIR.exists()})")
+
 
 # Global data store (loaded at startup)
 data_store = {}
@@ -97,10 +107,14 @@ app = FastAPI(
 )
 
 # CORS Configuration
-cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://localhost:3000,https://ccc-tableau-cloud-108816008638.us-central1.run.app")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=cors_origins.split(","),
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "https://mortality-signals-web-108816008638.us-central1.run.app",
+        "https://ccc-tableau-cloud-108816008638.us-central1.run.app"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
