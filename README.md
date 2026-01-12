@@ -13,7 +13,7 @@ Transform global mortality data into **actionable intelligence** through AI-powe
 
 ---
 
-## 🎯 What Makes This a Winner
+## 🎯 How does it stand out?
 
 | Feature | Why It Matters |
 |---------|----------------|
