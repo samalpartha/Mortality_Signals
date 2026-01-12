@@ -77,20 +77,20 @@ interface Intervention {
 
 export function ScenarioBuilder({ entities, causes }: ScenarioBuilderProps) {
   const [searchParams] = useSearchParams()
-  
+
   // Form state
   const [selectedEntity, setSelectedEntity] = useState(searchParams.get('entity') || '')
   const [selectedCauses, setSelectedCauses] = useState<string[]>([])
   const [reductionPct, setReductionPct] = useState(20)
   const [startYear, setStartYear] = useState(2010)
   const [endYear, setEndYear] = useState(2019)
-  
+
   // Results state
   const [result, setResult] = useState<ScenarioResult | null>(null)
   const [interventions, setInterventions] = useState<Intervention[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  
+
   // UI state
   const [showInterventions, setShowInterventions] = useState(true)
 
@@ -128,7 +128,7 @@ export function ScenarioBuilder({ entities, causes }: ScenarioBuilderProps) {
       selectedCauses.forEach(c => params.append('causes', c))
 
       const response = await fetch(`${API_BASE}/api/scenario/simulate?${params}`)
-      
+
       if (!response.ok) {
         const err = await response.json()
         throw new Error(err.detail || 'Simulation failed')
@@ -178,7 +178,7 @@ export function ScenarioBuilder({ entities, causes }: ScenarioBuilderProps) {
             <select
               value={selectedEntity}
               onChange={(e) => setSelectedEntity(e.target.value)}
-              className="input-field"
+              className="input-field dark:bg-black/20"
             >
               <option value="">Choose a country/region...</option>
               {entities.map(e => (
@@ -203,32 +203,32 @@ export function ScenarioBuilder({ entities, causes }: ScenarioBuilderProps) {
                 <ChevronDown className="w-4 h-4" />
               )}
             </button>
-            
+
             {showInterventions && (
               <div className="mt-3 space-y-2">
                 {interventions.map(int => (
                   <button
                     key={int.id}
                     onClick={() => applyIntervention(int)}
-                    className="w-full text-left p-3 rounded-lg bg-white/50 dark:bg-observatory-elevated/50 
-                             hover:bg-white dark:hover:bg-observatory-elevated border border-observatory-border/50
-                             hover:border-amber-500/30 transition-all group shadow-sm"
+                    className="w-full text-left p-3 rounded-lg bg-observatory-elevated 
+                             hover:bg-observatory-surface border border-observatory-border
+                             hover:border-signal-500/50 transition-all group shadow-sm"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-medium text-sm">{int.name}</span>
-                      <span className={clsx(
-                        'text-xs px-2 py-0.5 rounded-full',
-                        int.evidence_level === 'high' && 'bg-signal-500/20 text-signal-400',
-                        int.evidence_level === 'medium' && 'bg-amber-500/20 text-amber-400',
-                        int.evidence_level === 'low' && 'bg-observatory-muted/20 text-observatory-muted'
-                      )}>
+                      <span className="font-medium text-sm text-observatory-text">{int.name}</span>
+                      <span className={`text-[10px] uppercase font-bold px-1.5 py-0.5 rounded
+                        ${int.evidence_level === 'high' ? 'bg-signal-500/10 text-signal-500 border border-signal-500/20' :
+                          int.evidence_level === 'medium' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' :
+                            'bg-observatory-muted/10 text-observatory-muted border border-observatory-muted/20'}`}>
                         {int.evidence_level}
                       </span>
                     </div>
-                    <p className="text-xs text-observatory-muted mt-1">{int.description}</p>
-                    <p className="text-xs text-observatory-muted mt-1">
-                      Suggested: -{int.suggested_reduction}%
+                    <p className="text-xs text-observatory-muted mt-1 opacity-90 group-hover:opacity-100 transition-opacity">
+                      {int.description}
                     </p>
+                    <div className="text-xs text-observatory-muted mt-2 font-mono flex items-center gap-2">
+                      <span className="text-signal-500 font-semibold">Suggested: -{int.suggested_reduction}%</span>
+                    </div>
                   </button>
                 ))}
               </div>
@@ -247,7 +247,7 @@ export function ScenarioBuilder({ entities, causes }: ScenarioBuilderProps) {
                 const selected = Array.from(e.target.selectedOptions).map(o => o.value)
                 setSelectedCauses(selected)
               }}
-              className="input-field h-40"
+              className="input-field h-40 dark:bg-black/20"
             >
               {causes.map(c => (
                 <option key={c.cause} value={c.cause}>{c.cause}</option>
@@ -289,7 +289,7 @@ export function ScenarioBuilder({ entities, causes }: ScenarioBuilderProps) {
                   max="2018"
                   value={startYear}
                   onChange={(e) => setStartYear(Number(e.target.value))}
-                  className="input-field py-2"
+                  className="input-field py-2 dark:bg-black/20"
                 />
               </div>
               <div>
@@ -300,7 +300,7 @@ export function ScenarioBuilder({ entities, causes }: ScenarioBuilderProps) {
                   max="2019"
                   value={endYear}
                   onChange={(e) => setEndYear(Number(e.target.value))}
-                  className="input-field py-2"
+                  className="input-field py-2 dark:bg-black/20"
                 />
               </div>
             </div>
@@ -311,8 +311,8 @@ export function ScenarioBuilder({ entities, causes }: ScenarioBuilderProps) {
             {(!selectedEntity || selectedCauses.length === 0) && (
               <div className="text-xs text-amber-400 flex items-center gap-1">
                 <Lightbulb className="w-3 h-3" />
-                {!selectedEntity 
-                  ? 'Select an entity above to enable simulation' 
+                {!selectedEntity
+                  ? 'Select an entity above to enable simulation'
                   : 'Add at least one cause to simulate'
                 }
               </div>
@@ -328,11 +328,11 @@ export function ScenarioBuilder({ entities, causes }: ScenarioBuilderProps) {
                     : "bg-amber-600 hover:bg-amber-500"
                 )}
                 title={
-                  !selectedEntity 
-                    ? 'Select an entity first' 
-                    : selectedCauses.length === 0 
-                    ? 'Add at least one cause' 
-                    : 'Run what-if simulation'
+                  !selectedEntity
+                    ? 'Select an entity first'
+                    : selectedCauses.length === 0
+                      ? 'Add at least one cause'
+                      : 'Run what-if simulation'
                 }
               >
                 {loading ? (
@@ -374,7 +374,7 @@ export function ScenarioBuilder({ entities, causes }: ScenarioBuilderProps) {
                     {result.start_year}-{result.end_year}
                   </p>
                 </div>
-                
+
                 <div className="glass-card p-5 bg-gradient-to-br from-signal-500/20 to-signal-600/5">
                   <p className="text-sm text-observatory-muted">Scenario Deaths</p>
                   <p className="text-2xl font-bold mt-1 text-signal-400">
@@ -384,7 +384,7 @@ export function ScenarioBuilder({ entities, causes }: ScenarioBuilderProps) {
                     With {result.reduction_pct}% reduction
                   </p>
                 </div>
-                
+
                 <div className="glass-card p-5 bg-gradient-to-br from-amber-500/20 to-amber-600/5 kpi-glow">
                   <p className="text-sm text-observatory-muted">Deaths Averted</p>
                   <p className="text-2xl font-bold mt-1 text-amber-400">
@@ -417,22 +417,22 @@ export function ScenarioBuilder({ entities, causes }: ScenarioBuilderProps) {
                     <AreaChart data={result.yearly_comparison}>
                       <defs>
                         <linearGradient id="colorBaseline" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                          <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                          <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                          <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                         </linearGradient>
                         <linearGradient id="colorScenario" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3}/>
-                          <stop offset="95%" stopColor="#22c55e" stopOpacity={0}/>
+                          <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
+                          <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.5} />
-                      <XAxis 
-                        dataKey="year" 
-                        stroke="#6b7280" 
+                      <XAxis
+                        dataKey="year"
+                        stroke="#6b7280"
                         tick={{ fill: '#6b7280', fontSize: 12 }}
                       />
-                      <YAxis 
-                        stroke="#6b7280" 
+                      <YAxis
+                        stroke="#6b7280"
                         tick={{ fill: '#6b7280', fontSize: 12 }}
                         tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`}
                       />
@@ -478,13 +478,13 @@ export function ScenarioBuilder({ entities, causes }: ScenarioBuilderProps) {
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={result.yearly_comparison}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.5} />
-                      <XAxis 
-                        dataKey="year" 
-                        stroke="#6b7280" 
+                      <XAxis
+                        dataKey="year"
+                        stroke="#6b7280"
                         tick={{ fill: '#6b7280', fontSize: 12 }}
                       />
-                      <YAxis 
-                        stroke="#6b7280" 
+                      <YAxis
+                        stroke="#6b7280"
                         tick={{ fill: '#6b7280', fontSize: 12 }}
                         tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`}
                       />
@@ -496,9 +496,9 @@ export function ScenarioBuilder({ entities, causes }: ScenarioBuilderProps) {
                         }}
                         formatter={(value: number) => [value.toLocaleString(), 'Deaths Averted']}
                       />
-                      <Bar 
-                        dataKey="deaths_averted" 
-                        fill="#f59e0b" 
+                      <Bar
+                        dataKey="deaths_averted"
+                        fill="#f59e0b"
                         radius={[4, 4, 0, 0]}
                       />
                     </BarChart>
@@ -511,7 +511,7 @@ export function ScenarioBuilder({ entities, causes }: ScenarioBuilderProps) {
               <Zap className="w-16 h-16 text-observatory-muted mx-auto mb-4 opacity-50" />
               <h3 className="text-xl font-semibold mb-2">Build Your Scenario</h3>
               <p className="text-observatory-muted max-w-md mx-auto">
-                Select an entity, choose causes to target, set your reduction goal, 
+                Select an entity, choose causes to target, set your reduction goal,
                 and run the simulation to see potential lives saved.
               </p>
               <div className="mt-6 flex flex-wrap justify-center gap-2">
@@ -525,7 +525,7 @@ export function ScenarioBuilder({ entities, causes }: ScenarioBuilderProps) {
                       }
                     }}
                     className="px-3 py-1.5 rounded-full text-sm bg-signal-500/10 text-signal-600 dark:text-signal-400
-                             border border-signal-500/20 hover:bg-signal-500/20 hover:border-signal-500/40 transition-colors"
+                             border border-signal-500/30 hover:bg-signal-500/20 hover:border-signal-500/50 transition-colors"
                   >
                     {int.name}
                   </button>
