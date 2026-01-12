@@ -286,34 +286,6 @@ mortality_signals_hackathon/
 └── README.md
 ```
 
----
-
-## 🎬 Demo Script (3 Minutes)
-
-### Scene 1: The Problem (30s)
-> "Health analysts spend hours sifting through mortality data. They need to know: Where is something unusual happening? What's causing it? What can we do about it?"
-
-### Scene 2: Signal Detection (45s)
-> "Mortality Signals automatically surfaces anomalies using Z-score analysis."  
-> *Show Signal Feed with 4,500+ detected anomalies*  
-> "This spike in cardiovascular deaths is 2.5 standard deviations above normal. Click for entity details..."
-
-### Scene 3: Tableau Analytics (45s)
-> "For deep analysis, we embed Tableau Cloud dashboards."  
-> *Show Tableau Analytics page*  
-> "Top 10 Causes bar chart, yearly trends—all with interactive filters. JWT authentication keeps it secure."
-
-### Scene 4: Scenario Builder - The "Wow" Moment (45s)
-> "Here's what makes this different: What-if analysis."  
-> *Show Scenario Builder*  
-> "If we achieve a 25% reduction in malaria deaths in Nigeria starting 2010... 127,000 lives saved."  
-> "This is actionable intelligence, not just a dashboard."
-
-### Scene 5: Architecture (15s)
-> "Built with FastAPI, React, and Tableau Cloud. All Tableau secrets stay server-side. Production-ready security."
-
----
-
 ## 📄 API Reference
 
 ### Data Endpoints
